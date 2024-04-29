@@ -1,8 +1,10 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.utils import timezone
 import secrets
 from .paystack import Paystack
+
+User = get_user_model()
 
 # Create your models here.
 class UserWallet(models.Model):
@@ -51,3 +53,7 @@ class Payment(models.Model):
 			return True
 		return False
 	
+class PaymentHistory(models.Model):
+	user = models.ForeignKey(User, on_delete=models.CASCADE)
+	amount = models.PositiveIntegerField()
+	timestamp = models.DateTimeField(auto_now_add=True)

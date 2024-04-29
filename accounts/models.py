@@ -4,4 +4,5 @@ from django.contrib.auth.models import AbstractUser
 class User(AbstractUser):
     email = models.EmailField(unique=True, null=False, blank=False)
     has_access = models.BooleanField(default=False)
+    initial_payment = models.BooleanField(default=False)
     
