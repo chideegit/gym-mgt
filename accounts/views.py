@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.urls import reverse
 from .form import *
+from .models import GymMembership
 
 User = get_user_model()
 
@@ -14,6 +15,7 @@ def register_user(request):
             var = form.save(commit=False)
             var.username = var.email
             var.save()
+            GymMembership.objects.create(user=var)
             messages.success(request, 'Your account has been created. Please login')
             return redirect('login')
         else:

@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block content %}
+
+<script src="https://js.paystack.co/v1/inline.js"></script>
+
+<div class="p-5 mb-4 bg-light rounded-3">
+    <div class="container-fluid py-5">
+        <h1 class="display-5 fw-bold">Heads Up 💴</h1>
+        <p class="col-md-8 fs-4">You are about to pay {{payment.amount|intcomma}} NGN for your Gym membership renewal</p>
+        <button onclick="payWithPaystack()" class="btn btn-primary btn-lg" type="button">Pay Now</button>
+    </div>
+</div>
+
+<script>
+	function payWithPaystack() {
+		let currency = "NGN";
+		let plan = "";
+		let ref = "{{ payment.ref }}";
+		let amount = "{{ payment.amount }}";
+		let obj = {
+			key: "{{ paystack_pub_key }}",
+			email: "{{ payment.email }}",
+			amount: "{{ amount_value }}",
+			ref: ref,
+			callback: function (response) {
+				window.location.href = "{% url 'verify_payment' payment.ref %}";
+			},
+		};
+		if (Boolean(currency)) {
+			obj.currency = currency.toUpperCase();
+		}
+		if (Boolean(plan)) {
+			obj.plan - plan;
+		}
+
+		var handler = PaystackPop.setup(obj);
+		handler.openIframe();
+	}
+</script>
+
+{% endblock content %}

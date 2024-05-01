@@ -1,11 +1,17 @@
 from django.shortcuts import render, redirect
-from .models import Payment, UserWallet
+from .models import Payment
 from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth import get_user_model
+from accounts.models import GymMembership
+from datetime import datetime, timedelta
+
+User = get_user_model()
 
 def initiate_payment(request):
 	if request.method == "POST":
-		amount = request.POST['amount']
-		email = request.POST['email']
+		amount = request.POST.get('amount')
+		email = request.POST.get('email')
 
 		pk = settings.PAYSTACK_PUBLIC_KEY
 
@@ -18,9 +24,9 @@ def initiate_payment(request):
 			'paystack_pub_key': pk,
 			'amount_value': payment.amount_value(),
 		}
-		return render(request, 'make_payment.html', context)
+		return render(request, 'payments/make_payment.html', context)
 
-	return render(request, 'payment.html')
+	return render(request, 'payments/initiate_payment.html')
 
 
 def verify_payment(request, ref):
@@ -28,9 +34,15 @@ def verify_payment(request, ref):
 	verified = payment.verify_payment()
 
 	if verified:
-		user_wallet = UserWallet.objects.get(user=request.user)
-		user_wallet.balance += payment.amount
-		user_wallet.save()
-		print(request.user.username, " funded wallet successfully")
-		return render(request, "success.html")
-	return render(request, "success.html")
+		gm = GymMembership.objects.get(user=request.user)
+
+		# Get the current date and time
+		current_datetime = datetime.now()
+		# Extract the date from the datetime object
+		current_date = current_datetime.date()
+		gm.last_sub_date = current_date
+		gm.next_sub_date = current_date + timedelta(days=31)
+		gm.save()
+		messages.success(request, 'Payment completed! Your Gym Member has is now renewed for a month.')
+		return redirect('dashboard')
+	

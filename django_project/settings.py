@@ -37,9 +37,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
 
     'accounts', 
-    'dashboard', 
+    'dashboard',
+    'payments',
 
     'widget_tweaks' # third party
 ]
@@ -128,3 +130,6 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'accounts.User'
+
+PAYSTACK_SECRET_KEY = "sk_test_66a0568ea9a25f37c9aa70970d9115ef057d854d"
+PAYSTACK_PUBLIC_KEY = "pk_test_090c5a8ae7dbdfec8b90ff6f567267f2620472f4"
